@@ -1,3 +1,9 @@
+# vista-hunting
+qb-hunting with modifications and integrations to make improvements and work with VistaRP
+
+
+
+# Original Readme Below
 # qb-hunting
 qb-hunting with qb-target
 
