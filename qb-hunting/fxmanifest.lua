@@ -5,4 +5,13 @@ client_script {
     'client/cl_*.lua',
     'config.lua'
 }
+
+files{
+    'html/*'
+}
+
+ui_page('html/index.html')
+
+
 server_script 'server.lua'
+

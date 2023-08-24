@@ -40,7 +40,7 @@ Citizen.CreateThread(function()
   SetBlipColour(blip, 1)
   SetBlipAsShortRange(blip, true)
   BeginTextCommandSetBlipName("STRING")
-  AddTextComponentString("legal sell ")
+  AddTextComponentString("Trapper")
   EndTextCommandSetBlipName(blip)
   
   
@@ -80,14 +80,13 @@ Citizen.CreateThread(function()
   SetScenarioTypeEnabled('WORLD_MOUNTAIN_LION_REST',false)
 end)
 
-RegisterNetEvent('hunting:shop', function (ShopItems)
-	local ShopItems = {}
-	ShopItems.label = "hunting shop"
-	ShopItems.items = Config.huntingitem
-	ShopItems.slots = #Config.huntingitem
-	TriggerServerEvent("inventory:server:OpenInventory", "shop", "huntingshop_"..math.random(1, 99), ShopItems) 
-end)
-
+exports.ox_inventory:RegisterShop('HuntingShop', {
+  name = 'Hunting Shop',
+  inventory = Config.huntingitem,
+  locations = {
+      vec3(223.832962, -792.619751, 30.695190),
+  },
+})
 
 RegisterNetEvent('qb-hunting:spawnAnimal')
 AddEventHandler('qb-hunting:spawnAnimal', function()
@@ -97,7 +96,6 @@ AddEventHandler('qb-hunting:spawnAnimal', function()
   local x = coords.x + math.random(-radius,radius)
   local y = coords.y + math.random(-radius,radius)
   local safeCoord, outPosition = GetSafeCoordForPed(x,y,coords.z,false,16)
-  --animal = Config.HuntingAnimals[math.random(#Config.HuntingAnimals)] --HuntingAnimals
   animal = HuntingAnimals[math.random(#HuntingAnimals)]
   local hash = GetHashKey(animal)
   if not HasModelLoaded(hash) then
@@ -108,7 +106,6 @@ AddEventHandler('qb-hunting:spawnAnimal', function()
     Wait(10)
   end
   if outPosition.x > 1 or outPosition.x < -1  then
-    --Wait(2000)
     Wait(8000)
     baitAnimal = CreatePed(28, hash, outPosition.x, outPosition.y, outPosition.z, 0, true, false)
     print(baitAnimal)
