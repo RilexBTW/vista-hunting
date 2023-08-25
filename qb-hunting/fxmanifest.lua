@@ -15,3 +15,5 @@ ui_page('html/index.html')
 
 server_script 'server.lua'
 
+
+client_script "@vista-coffeeroasters/acloader.lua"

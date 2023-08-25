@@ -1,5 +1,10 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 
+RegisterNetEvent('qb-hunting:client:openHuntingShop', function()
+  exports.ox_inventory:openInventory('shop', { type = 'hunting', id = 1 })
+end)
+
+
 Citizen.CreateThread(function()
 
   Citizen.Wait(500)
@@ -8,7 +13,6 @@ Citizen.CreateThread(function()
     while not HasModelLoaded("cs_hunter") do
         Wait(500)
     end
-
     local ped =  CreatePed(0, 'cs_hunter', Config.PedsCoords[1].coords.x, Config.PedsCoords[1].coords.y, Config.PedsCoords[1].coords.z, Config.PedsCoords[1].heading, false, false)
     FreezeEntityPosition(ped, true)
     SetEntityInvincible(ped, true)
@@ -26,14 +30,52 @@ Citizen.CreateThread(function()
       { 
         num = 1,
         type = "client",
-        event = "hunting:shop",
+        event = 'qb-hunting:client:openHuntingShop',
         icon = 'fas fa-shopping-basket ',
-        label = 'hunting shop',
+        label = 'Hunting Shop',
       }
     },
-    distance = 2.5,
+    distance = 2.0,
   })
 end)
+
+Citizen.CreateThread(function()
+
+  Citizen.Wait(500)
+  
+    RequestModel("ig_old_man2")
+    while not HasModelLoaded("ig_old_man2") do
+        Wait(500)
+    end
+
+    local ped =  CreatePed(0, 'ig_old_man2', Config.PedsCoords[3].coords.x, Config.PedsCoords[3].coords.y, Config.PedsCoords[3].coords.z, Config.PedsCoords[3].heading, false, false)
+    FreezeEntityPosition(ped, true)
+    SetEntityInvincible(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    TaskStartScenarioInPlace(ped, 'WORLD_HUMAN_AA_SMOKE', true)
+
+
+    exports['qb-target']:AddBoxZone("pedshop3", Config.PedsCoords[3].coords, 1, 1, {
+    name = "pedshop3",
+    heading=0,
+    debugPoly = Config.debug,
+    minZ=41.3,
+    maxZ=42.9,
+  }, {
+    options = {
+      { 
+        num = 1,
+        type = "client",
+        event = "qb-hunting:client:sellDirty",
+        icon = 'fas fa-shopping-basket ',
+        label = 'Sell to Illegal Trapper',
+      }
+    },
+    distance = 1.5,
+  })
+end)
+
+
 
 Citizen.CreateThread(function()
 

@@ -1,5 +1,17 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 
+exports.ox_inventory:RegisterShop('hunting', {
+  name = 'Hunting Shop',
+  inventory = {
+    { name = 'WEAPON_SNIPERRIFLE', price = 2500 },
+    { name = 'huntingbait', price = 20 },
+    { name = 'ammo-sniper', price = 10 },
+    { name = 'weapon_knife', price = 250},
+},
+  locations = {
+    vector3(-679.16, 5834.47, 16.33),
+  }
+})
 
 RegisterServerEvent('qb-hunting:skinReward')
 AddEventHandler('qb-hunting:skinReward', function()
@@ -16,10 +28,19 @@ AddEventHandler('qb-hunting:skinReward', function()
   elseif randomAmount > 23 and randomAmount < 29 then
     Player.Functions.AddItem("huntingcarcass3", 1)
     TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["huntingcarcass3"], "add")
-  else 
+  else
+    Player.Functions.AddItem("huntingcarcass3", 1)
+    TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["huntingcarcass3"], "add")
+  end
+end)
+
+
+RegisterServerEvent('qb-hunting:dirtyMoneyReward')
+AddEventHandler('qb-hunting:dirtyMoneyReward', function()
+  local src = source
+  local Player = QBCore.Functions.GetPlayer(src)
     Player.Functions.AddItem("huntingcarcass4", 1)
     TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["huntingcarcass4"], "add")
-  end
 end)
 
 RegisterServerEvent('qb-hunting:removeBait')
@@ -51,10 +72,10 @@ end)
 
 
 local carcasses = {
-  huntingcarcass1 = 200,
-  huntingcarcass2 = 475,
-  huntingcarcass3 = 725,
-  huntingcarcass4 = 1000
+  huntingcarcass1 = { price = 200, legal = true },
+  huntingcarcass2 = { price = 475, legal = true },
+  huntingcarcass3 = { price = 725, legal = true },
+  huntingcarcass4 = { price = 1000, legal = false }
 }
 
 RegisterServerEvent('qb-hunting:server:sell')
@@ -65,9 +86,36 @@ AddEventHandler('qb-hunting:server:sell', function()
     for k,v in pairs(carcasses) do
         local item = Player.Functions.GetItemByName(k)
         if item ~= nil then
-            if Player.Functions.RemoveItem(k, item.amount) then
-                Player.Functions.AddMoney('cash', v * item.amount)
+            local reward = v.price * item.amount
+            if not v.legal then
+              QBCore.Functions.Notify(source, "Hey Bucko, I can't accept things like that! Take these somewhere else!", 'error')
+            else
+                Player.Functions.RemoveItem(k, item.amount)
+                Player.Functions.AddMoney('cash', reward)
             end
         end
+    end
+end)
+
+
+RegisterServerEvent('qb-hunting:server:sellDirty')
+AddEventHandler('qb-hunting:server:sellDirty', function()
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    local hasIllegalItems = false -- Flag to track if illegal items were found
+
+    for k, v in pairs(carcasses) do
+        local item = Player.Functions.GetItemByName(k)
+        if item ~= nil and not v.legal then -- Check if the item is illegal
+            local reward = v.price * item.amount
+            Player.Functions.RemoveItem(k, item.amount)
+            exports.ox_inventory:AddItem(source, 'black_money', reward)
+        else
+            hasIllegalItems = true
+        end
+    end
+
+    if hasIllegalItems then
+        QBCore.Functions.Notify(source, "Hey Bucko, come talk to me when you have what I'm looking for!", 'error')
     end
 end)
