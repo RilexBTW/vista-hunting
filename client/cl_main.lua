@@ -6,6 +6,7 @@ local refreshPed = false
 local jobPed
 local useBaitCooldown = 3
 local illegalhunting = false
+local baitAnimal = nil
 local lastCreatedAnimal = nil -- Initialize the variable to store the last created animal
 
 
